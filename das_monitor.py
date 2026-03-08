@@ -41,7 +41,7 @@ DILDATA_API_URL = "https://eapi.askedgar.io/enterprise/v1/dilution-data"
 DILDATA_API_KEY = ASKEDGAR_API_KEY
 SCREENER_API_URL = "https://eapi.askedgar.io/v1/screener"
 SCREENER_API_KEY = ASKEDGAR_API_KEY
-POLL_INTERVAL = 1.5
+POLL_INTERVAL = 1.0
 
 # Colors (dark theme matching React design)
 BG = "#111315"
