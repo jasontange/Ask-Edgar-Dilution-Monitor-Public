@@ -41,46 +41,57 @@ The app polls window titles every 1 second and detects when a ticker changes.
 
 **ToS limitations**: Only *detached* chart windows are detected — charts embedded in the main ToS window (`Main@thinkorswim`) don't expose the active ticker in their window title. Switching between existing chart tabs also won't trigger a change since all tab tickers are always listed in the title. For best results with ToS, use detached chart windows and enter new tickers rather than clicking existing tabs.
 
-## Setup
+## Quick Start (No coding experience needed)
 
-### 1. Clone the repo
+### 1. Install Python
+
+Download Python from [python.org/downloads](https://www.python.org/downloads/) and install it.
+
+**IMPORTANT:** During installation, check the box that says **"Add Python to PATH"** — this is required.
+
+### 2. Download this app
+
+Click the green **"Code"** button at the top of this page, then click **"Download ZIP"**.
+
+Extract the ZIP file to a folder on your computer (e.g. your Desktop).
+
+### 3. Run the setup
+
+Open the extracted folder and **double-click `setup.bat`**. This will:
+- Install the required Python packages
+- Create a `.env` file for your API key
+
+### 4. Add your API key
+
+Open the `.env` file (in the same folder) with Notepad and replace `your_api_key_here` with your actual API key:
+
+```
+ASKEDGAR_API_KEY=paste_your_key_here
+```
+
+**Don't have a key?** Request a free trial at [askedgar.io](https://share-na2.hsforms.com/1mRWaNy8PRFuCZr5YJvjdQQqjkci). One key works for all endpoints.
+
+### 5. Launch the app
+
+**Double-click `run.bat`** to start the overlay.
+
+Open DAS Trader Pro or thinkorswim alongside it. Click on a ticker and the data loads automatically.
+
+---
+
+<details>
+<summary><b>Alternative: Setup via command line</b></summary>
 
 ```bash
 git clone https://github.com/jasontange/Ask-Edgar-Dilution-Monitor-Public.git
 cd Ask-Edgar-Dilution-Monitor-Public
-```
-
-### 2. Install dependencies
-
-```bash
 pip install -r requirements.txt
-```
-
-### 3. Configure your API key
-
-Copy the example env file and fill in your key:
-
-```bash
 cp .env.example .env
-```
-
-Edit `.env` with your API key:
-
-```
-ASKEDGAR_API_KEY=your_api_key_here
-```
-
-**Where to get your API key:**
-
-- Request a free trial key at [askedgar.io](https://share-na2.hsforms.com/1mRWaNy8PRFuCZr5YJvjdQQqjkci). One key works for all endpoints.
-
-### 4. Run it
-
-```bash
+# Edit .env with your API key
 python das_monitor.py
 ```
 
-Open DAS Trader Pro or thinkorswim alongside the overlay. Click on a ticker and the data loads automatically.
+</details>
 
 ## How to Customize
 

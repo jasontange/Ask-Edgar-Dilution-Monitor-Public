@@ -595,35 +595,31 @@ class DilutionOverlay:
             ).pack(fill="x")
 
     def _add_jmt415_card(self, notes: list[dict]):
-        """JMT415 Previous Notes card with bulleted list."""
+        """JMT415 Previous Notes card with bordered panels per note."""
         card = self._make_card(self.content_frame, title="JMT415 Previous Notes")
-        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=8)
+        body = tk.Frame(card, bg=BG_CARD, padx=8, pady=8)
         body.pack(fill="x")
 
         for note in notes:
             date = (note.get("filed_at") or "")[:10]
-            summary = note.get("summary", "").strip()
-            # Take first meaningful line
-            text = ""
-            for line in summary.split("\n"):
-                line = line.strip().lstrip("-").strip()
-                if line:
-                    text = line
-                    break
-            if not text:
-                text = note.get("title") or "Note"
+            text = (note.get("summary") or note.get("title") or "Note").strip()
 
-            row = tk.Frame(body, bg=BG_CARD)
-            row.pack(fill="x", pady=1)
-            tk.Label(row, text=f"\u2022  {date}", fg=FG_DIM, bg=BG_CARD,
-                     font=("Consolas", 9)).pack(side="left", padx=(0, 8))
-            note_label = tk.Label(row, text=text, fg=FG, bg=BG_CARD,
+            row = tk.Frame(body, bg=BG_ROW,
+                           highlightbackground=BORDER_INNER, highlightthickness=1)
+            row.pack(fill="x", pady=2)
+
+            inner = tk.Frame(row, bg=BG_ROW, padx=10, pady=6)
+            inner.pack(fill="x")
+
+            tk.Label(inner, text=date, fg=FG_DIM, bg=BG_ROW,
+                     font=("Consolas", 9)).pack(anchor="w")
+            note_label = tk.Label(inner, text=text, fg=FG, bg=BG_ROW,
                                   font=("Consolas", 9), anchor="w",
                                   wraplength=350, justify="left")
-            note_label.pack(side="left", fill="x", expand=True)
+            note_label.pack(fill="x", pady=(2, 0))
 
             def _rewrap(event, lbl=note_label):
-                lbl.config(wraplength=max(event.width - 140, 100))
+                lbl.config(wraplength=max(event.width - 40, 100))
             row.bind("<Configure>", _rewrap)
 
     def _add_in_play_section(self, warrants: list[dict], convertibles: list[dict],
