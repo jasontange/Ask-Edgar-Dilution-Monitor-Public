@@ -25,26 +25,22 @@ except ImportError:
 # ── Config ──────────────────────────────────────────────────────────────────
 # API keys – set these as environment variables or in a .env file
 # See .env.example for details
-ASKEDGAR_DILUTION_KEY = os.environ.get("ASKEDGAR_DILUTION_API_KEY", "")
-ASKEDGAR_DATA_KEY = os.environ.get("ASKEDGAR_DATA_API_KEY", "")
-MASSIVE_KEY = os.environ.get("MASSIVE_API_KEY", "")
+ASKEDGAR_API_KEY = os.environ.get("ASKEDGAR_API_KEY", "")
 
-if not ASKEDGAR_DILUTION_KEY or not ASKEDGAR_DATA_KEY:
-    print("ERROR: Missing API keys. Copy .env.example to .env and fill in your keys.")
-    print("  ASKEDGAR_DILUTION_API_KEY - request trial at askedgar.io")
-    print("  ASKEDGAR_DATA_API_KEY     - request trial at askedgar.io")
-    print("  MASSIVE_API_KEY           - from massive.com (optional, for live price)")
+if not ASKEDGAR_API_KEY:
+    print("ERROR: Missing API key. Copy .env.example to .env and fill in your key.")
+    print("  ASKEDGAR_API_KEY - request trial at askedgar.io")
 
 DILUTION_API_URL = "https://eapi.askedgar.io/enterprise/v1/dilution-rating"
-DILUTION_API_KEY = ASKEDGAR_DILUTION_KEY
+DILUTION_API_KEY = ASKEDGAR_API_KEY
 FLOAT_API_URL = "https://eapi.askedgar.io/enterprise/v1/float-outstanding"
-FLOAT_API_KEY = ASKEDGAR_DATA_KEY
+FLOAT_API_KEY = ASKEDGAR_API_KEY
 NEWS_API_URL = "https://eapi.askedgar.io/enterprise/v1/news"
-NEWS_API_KEY = ASKEDGAR_DATA_KEY
+NEWS_API_KEY = ASKEDGAR_API_KEY
 DILDATA_API_URL = "https://eapi.askedgar.io/enterprise/v1/dilution-data"
-DILDATA_API_KEY = ASKEDGAR_DATA_KEY
-PRICE_API_URL = "https://api.massive.com/v2/last/trade"
-PRICE_API_KEY = MASSIVE_KEY
+DILDATA_API_KEY = ASKEDGAR_API_KEY
+SCREENER_API_URL = "https://eapi.askedgar.io/v1/screener"
+SCREENER_API_KEY = ASKEDGAR_API_KEY
 POLL_INTERVAL = 1.5
 
 # Colors (dark theme matching React design)
@@ -185,15 +181,17 @@ def fetch_news_and_grok(ticker: str) -> tuple[list[dict], str | None, str | None
 
 
 def fetch_last_price(ticker: str) -> float | None:
+    """Fetch last price via Ask Edgar screener endpoint."""
     try:
         resp = requests.get(
-            f"{PRICE_API_URL}/{ticker}",
-            params={"apiKey": PRICE_API_KEY},
+            SCREENER_API_URL,
+            headers={"API-KEY": SCREENER_API_KEY, "Content-Type": "application/json"},
+            params={"ticker": ticker, "limit": 1},
             timeout=10,
         )
         data = resp.json()
-        results = data.get("results", data)
-        return results.get("p")
+        if data.get("status") == "success" and data.get("results"):
+            return data["results"][0].get("price")
     except Exception as e:
         print(f"Price API error for {ticker}: {e}")
     return None
