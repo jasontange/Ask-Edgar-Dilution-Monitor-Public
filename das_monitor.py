@@ -43,23 +43,32 @@ SCREENER_API_URL = "https://eapi.askedgar.io/v1/screener"
 SCREENER_API_KEY = ASKEDGAR_API_KEY
 POLL_INTERVAL = 1.0
 
-# Colors (dark theme matching React design)
-BG = "#111315"
-BG_CARD = "#17191c"
-BG_ROW = "#222529"
-BORDER = "#2a2d31"
-BORDER_INNER = "#2d3136"
-FG = "#E0E0E0"
-FG_DIM = "#9aa0a6"
-FG_INFO = "#c7c9cc"
-ACCENT = "#00D4FF"
+# ── Visual Style ────────────────────────────────────────────────────────────
+BG = "#0D1014"
+BG_CARD = "#151A20"
+BG_ROW = "#1B2128"
+BG_ROW_ALT = "#181D24"
+BORDER = "#232A33"
+BORDER_INNER = "#20262E"
+FG = "#E6EAF0"
+FG_DIM = "#8B949E"
+FG_INFO = "#B7C0CC"
+ACCENT = "#63D3FF"
 
 RISK_BG = {
-    "High": "#C62828",
-    "Medium": "#E65100",
-    "Low": "#2E7D32",
-    "N/A": "#555555",
+    "High": "#A93232",
+    "Medium": "#B96A16",
+    "Low": "#2F7D57",
+    "N/A": "#4A525C",
 }
+
+# Fonts
+FONT_UI = ("Segoe UI", 10)
+FONT_UI_BOLD = ("Segoe UI Semibold", 10)
+FONT_HEADER = ("Segoe UI Semibold", 13)
+FONT_TICKER = ("Segoe UI Semibold", 24)
+FONT_MONO = ("Consolas", 9)
+FONT_MONO_BOLD = ("Consolas", 9, "bold")
 
 
 def risk_bg(level: str) -> str:
@@ -228,7 +237,7 @@ def fetch_in_play_dilution(ticker: str) -> tuple[list[dict], list[dict], float]:
     convertibles = []
 
     for item in data.get("results", []):
-        registered = item.get("registered", "")
+        registered = item.get("registered") or ""
         if "Not Registered" in registered:
             continue
 
@@ -285,26 +294,26 @@ class DilutionOverlay:
         header_card.bind("<Button-1>", self._start_drag)
         header_card.bind("<B1-Motion>", self._on_drag)
 
-        header_inner = tk.Frame(header_card, bg=BG_CARD, padx=12, pady=10)
+        header_inner = tk.Frame(header_card, bg=BG_CARD, padx=14, pady=12)
         header_inner.pack(fill="x")
         header_inner.bind("<Button-1>", self._start_drag)
         header_inner.bind("<B1-Motion>", self._on_drag)
 
         self.ticker_label = tk.Label(
             header_inner, text="Waiting...", fg=ACCENT,
-            bg=BG_CARD, font=("Consolas", 24, "bold"),
+            bg=BG_CARD, font=FONT_TICKER,
         )
         self.ticker_label.pack(side="left")
 
         self.overall_badge = tk.Label(
-            header_inner, text="", fg="white", bg="#555555",
-            font=("Consolas", 12, "bold"), padx=10, pady=4,
+            header_inner, text="", fg="white", bg="#4A525C",
+            font=FONT_UI_BOLD, padx=12, pady=6,
         )
         self.overall_badge.pack(side="right")
 
         self.info_label = tk.Label(
             header_card, text="", fg=FG_INFO, bg=BG_CARD,
-            font=("Consolas", 10), anchor="w",
+            font=FONT_UI, anchor="w",
         )
         self.info_label.pack(fill="x", padx=14, pady=(0, 10))
 
@@ -347,29 +356,29 @@ class DilutionOverlay:
         tk.Label(
             self.content_frame,
             text="Load a ticker in DAS or thinkorswim\nto see dilution data here.",
-            fg="#555555", bg=BG, font=("Consolas", 12), justify="center",
+            fg="#4A525C", bg=BG, font=("Segoe UI", 12), justify="center",
         ).pack(pady=60)
 
     def _show_loading(self, ticker: str):
         self._clear()
         self.ticker_label.config(text=ticker)
-        self.overall_badge.config(text="...", bg="#555555")
+        self.overall_badge.config(text="...", bg="#4A525C")
         self.info_label.config(text="Loading...")
         tk.Label(
             self.content_frame,
             text=f"Fetching data for {ticker}...",
-            fg=ACCENT, bg=BG, font=("Consolas", 12),
+            fg=ACCENT, bg=BG, font=("Segoe UI", 12),
         ).pack(pady=60)
         self.root.update_idletasks()
 
     def _show_no_data(self, ticker: str):
         self._clear()
-        self.overall_badge.config(text="NO DATA", bg="#555555")
+        self.overall_badge.config(text="NO DATA", bg="#4A525C")
         self.info_label.config(text="")
         tk.Label(
             self.content_frame,
             text=f"No dilution data available for {ticker}.",
-            fg="#FF6666", bg=BG, font=("Consolas", 11), justify="center",
+            fg="#FF6666", bg=BG, font=("Segoe UI", 11), justify="center",
         ).pack(pady=60)
 
     def _make_card(self, parent, title: str = None) -> tk.Frame:
@@ -379,7 +388,7 @@ class DilutionOverlay:
         card.pack(fill="x", padx=8, pady=(6, 0))
         if title:
             hdr = tk.Label(card, text=title, fg=ACCENT, bg=BG_CARD,
-                           font=("Consolas", 14, "bold"), anchor="w", padx=12, pady=8)
+                           font=FONT_HEADER, anchor="w", padx=14, pady=10)
             hdr.pack(fill="x")
             tk.Frame(card, bg=BORDER, height=1).pack(fill="x")
         return card
@@ -473,13 +482,13 @@ class DilutionOverlay:
 
         lbl = tk.Label(
             frame, text=label, fg=FG_DIM, bg=BG_CARD,
-            font=("Consolas", 9), cursor="hand2",
+            font=FONT_MONO, cursor="hand2",
         )
         lbl.pack()
 
         badge = tk.Label(
             frame, text=f" {level} ", fg="white", bg=risk_bg(level),
-            font=("Consolas", 10, "bold"), padx=6, pady=2, cursor="hand2",
+            font=FONT_UI_BOLD, padx=8, pady=3, cursor="hand2",
         )
         badge.pack()
 
@@ -491,10 +500,10 @@ class DilutionOverlay:
                        url: str | None, date: str = ""):
         """Feed row with source stripe on the left. Entire row is clickable."""
         SOURCE_COLORS = {
-            "news": ACCENT,
-            "8-K": "#E65100",
-            "6-K": "#E65100",
-            "grok": "#9C27B0",
+            "news": "#1F8FB3",
+            "8-K": "#A85C14",
+            "6-K": "#A85C14",
+            "grok": "#7B3FA0",
         }
         source_color = SOURCE_COLORS.get(form_type, "#555555")
         tag = form_type.upper() if form_type != "news" else "NEWS"
@@ -510,12 +519,12 @@ class DilutionOverlay:
         # Source stripe (left column)
         stripe = tk.Label(
             row, text=tag, fg="white", bg=source_color,
-            font=("Consolas", 9, "bold"), width=6, padx=6, pady=8,
+            font=("Consolas", 8, "bold"), width=5, padx=4, pady=8,
         )
         stripe.pack(side="left", fill="y")
 
         # Content area
-        content = tk.Frame(row, bg=BG_ROW, padx=8, pady=4)
+        content = tk.Frame(row, bg=BG_ROW, padx=10, pady=6)
         content.pack(side="left", fill="both", expand=True)
 
         top_row = tk.Frame(content, bg=BG_ROW)
@@ -524,12 +533,12 @@ class DilutionOverlay:
         if date:
             tk.Label(
                 top_row, text=date, fg=FG_DIM, bg=BG_ROW,
-                font=("Consolas", 9),
+                font=FONT_MONO,
             ).pack(side="left", padx=(0, 8))
 
         hl_label = tk.Label(
             top_row, text=headline, fg="white", bg=BG_ROW,
-            font=("Consolas", 9, "bold"), anchor="w", wraplength=350,
+            font=FONT_UI_BOLD, anchor="w", wraplength=350,
             justify="left",
         )
         hl_label.pack(side="left", fill="x", expand=True)
@@ -553,11 +562,11 @@ class DilutionOverlay:
     def _add_section_card(self, title: str, text: str):
         """Section card with header + bottom border + wrapped text content."""
         card = self._make_card(self.content_frame, title=title)
-        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=12)
+        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=14)
         body.pack(fill="x")
         text_label = tk.Label(
             body, text=text, fg=FG, bg=BG_CARD,
-            font=("Consolas", 10), justify="left", anchor="w",
+            font=FONT_UI, justify="left", anchor="w",
         )
         text_label.pack(fill="x")
         def _rewrap(event, lbl=text_label):
@@ -567,7 +576,7 @@ class DilutionOverlay:
     def _add_offering_ability_card(self, desc: str):
         """Offering Ability card with color-coded capacity values."""
         card = self._make_card(self.content_frame, title="Offering Ability")
-        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=12)
+        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=14)
         body.pack(fill="x")
 
         # Parse and color individual segments — stacked vertically
@@ -589,7 +598,7 @@ class DilutionOverlay:
                 color = FG
                 bold = False
 
-            font = ("Consolas", 10, "bold") if bold else ("Consolas", 10)
+            font = ("Segoe UI Semibold", 10) if bold else FONT_UI
             tk.Label(
                 body, text=part, fg=color, bg=BG_CARD,
                 font=font, anchor="w",
@@ -598,24 +607,25 @@ class DilutionOverlay:
     def _add_jmt415_card(self, notes: list[dict]):
         """JMT415 Previous Notes card with bordered panels per note."""
         card = self._make_card(self.content_frame, title="JMT415 Previous Notes")
-        body = tk.Frame(card, bg=BG_CARD, padx=8, pady=8)
+        body = tk.Frame(card, bg=BG_CARD, padx=10, pady=10)
         body.pack(fill="x")
 
-        for note in notes:
+        for i, note in enumerate(notes):
             date = (note.get("filed_at") or "")[:10]
             text = (note.get("summary") or note.get("title") or "Note").strip()
+            row_bg = BG_ROW if i % 2 == 0 else BG_ROW_ALT
 
-            row = tk.Frame(body, bg=BG_ROW,
+            row = tk.Frame(body, bg=row_bg,
                            highlightbackground=BORDER_INNER, highlightthickness=1)
             row.pack(fill="x", pady=2)
 
-            inner = tk.Frame(row, bg=BG_ROW, padx=10, pady=6)
+            inner = tk.Frame(row, bg=row_bg, padx=10, pady=8)
             inner.pack(fill="x")
 
-            tk.Label(inner, text=date, fg=FG_DIM, bg=BG_ROW,
-                     font=("Consolas", 9)).pack(anchor="w")
-            note_label = tk.Label(inner, text=text, fg=FG, bg=BG_ROW,
-                                  font=("Consolas", 9), anchor="w",
+            tk.Label(inner, text=date, fg=FG_DIM, bg=row_bg,
+                     font=FONT_MONO).pack(anchor="w")
+            note_label = tk.Label(inner, text=text, fg=FG, bg=row_bg,
+                                  font=FONT_UI, anchor="w",
                                   wraplength=350, justify="left")
             note_label.pack(fill="x", pady=(2, 0))
 
@@ -626,13 +636,13 @@ class DilutionOverlay:
     def _add_in_play_section(self, warrants: list[dict], convertibles: list[dict],
                              stock_price: float = 0.0, dilution_url: str = ""):
         card = self._make_card(self.content_frame, title="In Play Dilution")
-        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=8)
+        body = tk.Frame(card, bg=BG_CARD, padx=14, pady=10)
         body.pack(fill="x")
 
         if warrants:
             tk.Label(
                 body, text="WARRANTS", fg="#FFD600", bg=BG_CARD,
-                font=("Consolas", 11, "bold"), anchor="w",
+                font=FONT_UI_BOLD, anchor="w",
             ).pack(fill="x", pady=(4, 4))
             for w in warrants:
                 ex_price = w.get("warrants_exercise_price", 0) or 0
@@ -649,7 +659,7 @@ class DilutionOverlay:
         if convertibles:
             tk.Label(
                 body, text="CONVERTIBLES", fg="#FFD600", bg=BG_CARD,
-                font=("Consolas", 11, "bold"), anchor="w",
+                font=FONT_UI_BOLD, anchor="w",
             ).pack(fill="x", pady=(8, 4))
             for c in convertibles:
                 conv_price = c.get("conversion_price", 0) or 0
@@ -672,25 +682,25 @@ class DilutionOverlay:
                        highlightbackground=BORDER_INNER, highlightthickness=1)
         row.pack(fill="x", pady=2)
 
-        inner = tk.Frame(row, bg=BG_ROW, padx=10, pady=4)
+        inner = tk.Frame(row, bg=BG_ROW, padx=10, pady=6)
         inner.pack(fill="x")
 
         # Line 1: details (truncated if long)
         detail_text = details if len(details) <= 60 else details[:57] + "..."
         tk.Label(inner, text=detail_text, fg="white", bg=BG_ROW,
-                 font=("Consolas", 9), anchor="w").pack(fill="x")
+                 font=FONT_UI, anchor="w").pack(fill="x")
 
         # Line 2: remaining | price | filed
         data_row = tk.Frame(inner, bg=BG_ROW)
         data_row.pack(fill="x", pady=(2, 0))
         tk.Label(data_row, text=remaining, fg=highlight, bg=BG_ROW,
-                 font=("Consolas", 9, "bold")).pack(side="left")
+                 font=FONT_MONO_BOLD).pack(side="left")
         tk.Label(data_row, text="  |  ", fg=FG_DIM, bg=BG_ROW,
-                 font=("Consolas", 9)).pack(side="left")
+                 font=FONT_MONO).pack(side="left")
         tk.Label(data_row, text=price, fg=highlight, bg=BG_ROW,
-                 font=("Consolas", 9, "bold")).pack(side="left")
+                 font=FONT_MONO_BOLD).pack(side="left")
         tk.Label(data_row, text=f"  |  Filed: {filed}", fg=FG_DIM, bg=BG_ROW,
-                 font=("Consolas", 9)).pack(side="left")
+                 font=FONT_MONO).pack(side="left")
 
         if url:
             row.config(cursor="hand2")
