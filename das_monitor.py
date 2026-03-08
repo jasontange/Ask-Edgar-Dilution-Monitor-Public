@@ -264,6 +264,7 @@ class DilutionOverlay:
         self.root = tk.Tk()
         self.root.title("Ask Edgar - Dilution Monitor")
         self.root.attributes("-topmost", True)
+        self.root.attributes("-toolwindow", False)
         self.root.configure(bg=BG)
         self.root.resizable(True, True)
         self.root.geometry("480x620+50+50")
