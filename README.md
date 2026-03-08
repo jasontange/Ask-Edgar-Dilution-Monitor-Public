@@ -93,26 +93,59 @@ python das_monitor.py
 
 </details>
 
-## How to Customize
+## How to Customize (Vibe Coding)
 
-This is a single-file Python app (~770 lines). Some things you might want to change:
+This is a single Python file — no frameworks, no build tools. You can customize it with an AI coding assistant like **Claude Code**, **Cursor**, or **GitHub Copilot** in VS Code.
 
-| What | Where | Notes |
+### Setting up your editor
+
+1. Install [VS Code](https://code.visualstudio.com/) or [Cursor](https://cursor.com/)
+2. Open the extracted folder: **File > Open Folder** and select the app folder
+3. You should see `das_monitor.py` in the file list on the left — that's the entire app
+
+### Example: Change the window size
+
+Try asking your AI assistant:
+
+> "Make the overlay window wider — change it from 480px to 600px"
+
+It will find this line in `das_monitor.py` and update it:
+
+```python
+# Before
+self.root.geometry("480x620+50+50")
+
+# After
+self.root.geometry("600x620+50+50")
+```
+
+To test your change, run the app from the terminal in VS Code (`` Ctrl+` `` to open it):
+
+```bash
+python das_monitor.py
+```
+
+Or just double-click `run.bat` again.
+
+### Other things you can customize
+
+| What | Where to look | Example prompt for your AI assistant |
 |---|---|---|
-| **Window size** | Line ~248 (`geometry("480x620+50+50")`) | Width x height + position |
-| **Poll interval** | `POLL_INTERVAL = 1.0` | Seconds between window checks |
-| **Colors** | Lines ~31-40 (color constants) | Dark theme hex values |
-| **News limit** | `fetch_news_and_grok` params | Currently fetches top 2 news + 3 analyst notes |
-| **Grok truncation** | `_add_feed_item` | Currently truncates at 240 chars |
-| **Platform detection** | `find_montage_windows` / `find_tos_tickers` | Add regex patterns for other platforms |
+| **Window size/position** | `geometry("480x620+50+50")` | "Make the overlay 600px wide" |
+| **Colors** | Color constants at the top | "Change the background to navy blue" |
+| **Poll speed** | `POLL_INTERVAL = 1.0` | "Check for ticker changes every 0.5 seconds" |
+| **News count** | `fetch_news_and_grok` | "Show 5 news headlines instead of 2" |
+| **Platform support** | `find_montage_windows` | "Add support for Interactive Brokers TWS" |
 
-### Adding Support for Other Platforms
+### Adding support for other trading platforms
 
-To add a new trading platform, you need to:
+Ask your AI assistant something like:
 
-1. Figure out how the platform formats its window titles (use a tool like Spy++ or just `print(win32gui.GetWindowText(hwnd))`)
-2. Write a function similar to `find_montage_windows()` that extracts the ticker from the title
-3. Add the detection logic to the `poll()` loop in `_start_monitor()`
+> "Add support for [platform name] — it needs to detect the active ticker from the window title"
+
+The AI will need to know how your platform formats its window titles. You can find out by asking:
+
+> "Print all visible window titles on my screen so I can find my trading platform"
 
 ## Tech Stack
 
