@@ -31,8 +31,8 @@ MASSIVE_KEY = os.environ.get("MASSIVE_API_KEY", "")
 
 if not ASKEDGAR_DILUTION_KEY or not ASKEDGAR_DATA_KEY:
     print("ERROR: Missing API keys. Copy .env.example to .env and fill in your keys.")
-    print("  ASKEDGAR_DILUTION_API_KEY - from askedgar.io enterprise plan")
-    print("  ASKEDGAR_DATA_API_KEY     - from askedgar.io enterprise plan")
+    print("  ASKEDGAR_DILUTION_API_KEY - request trial at askedgar.io")
+    print("  ASKEDGAR_DATA_API_KEY     - request trial at askedgar.io")
     print("  MASSIVE_API_KEY           - from massive.com (optional, for live price)")
 
 DILUTION_API_URL = "https://eapi.askedgar.io/enterprise/v1/dilution-rating"

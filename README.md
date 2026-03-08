@@ -30,7 +30,7 @@ The app runs as a dark-themed, always-on-top overlay panel. It sits alongside yo
 | **OS** | Windows only (uses `win32gui` for window detection) |
 | **Python** | 3.10+ |
 | **Trading Platforms** | DAS Trader Pro, thinkorswim (TD Ameritrade / Charles Schwab) |
-| **API Access** | [Ask Edgar](https://askedgar.io) Enterprise plan, [Massive.com](https://massive.com) account |
+| **API Access** | [Ask Edgar](https://askedgar.io) API trial key, [Massive.com](https://massive.com) account |
 
 ### How Platform Detection Works
 
@@ -72,7 +72,7 @@ MASSIVE_API_KEY=your_massive_key
 
 **Where to get API keys:**
 
-- **Ask Edgar** (`ASKEDGAR_DILUTION_API_KEY` and `ASKEDGAR_DATA_API_KEY`): Sign up for an Enterprise plan at [askedgar.io](https://askedgar.io). You'll receive two API keys – one for dilution ratings and one for data endpoints (float, news, dilution data).
+- **Ask Edgar** (`ASKEDGAR_DILUTION_API_KEY` and `ASKEDGAR_DATA_API_KEY`): Request a free trial API key at [askedgar.io](https://share-na2.hsforms.com/1mRWaNy8PRFuCZr5YJvjdQQqjkci). You'll receive two API keys – one for dilution ratings and one for data endpoints (float, news, dilution data).
 - **Massive.com** (`MASSIVE_API_KEY`): Sign up at [massive.com](https://massive.com) for real-time stock price data. This key is optional – without it, the "In Play Dilution" section won't filter by current price.
 
 ### 4. Run it
