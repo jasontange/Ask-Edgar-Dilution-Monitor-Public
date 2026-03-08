@@ -77,6 +77,8 @@ ASKEDGAR_API_KEY=paste_your_key_here
 
 Open DAS Trader Pro or thinkorswim alongside it. Click on a ticker and the data loads automatically.
 
+To stop the app, just close the overlay window (click the X) or close the command prompt window that opened with it.
+
 ---
 
 <details>
