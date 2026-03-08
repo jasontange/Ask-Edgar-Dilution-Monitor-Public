@@ -19,7 +19,7 @@ The app runs as a dark-themed, always-on-top overlay panel. It sits alongside yo
 
 - Risk badges are color-coded: **red** (high), **orange** (medium), **green** (low)
 - News items have colored stripes: **cyan** (news), **orange** (8-K/6-K), **purple** (grok)
-- Warrants/convertibles highlight **green** if strike is above current price, **orange** if below
+- Warrants/convertibles highlight **green** if strike/conversion price is at or below current price (in the money), **orange** otherwise
 - Pending S-1/F-1 registrations are bolded in red as a warning
 - Everything is clickable – badges link to Ask Edgar, news links to source documents
 
@@ -34,10 +34,12 @@ The app runs as a dark-themed, always-on-top overlay panel. It sits alongside yo
 
 ### How Platform Detection Works
 
-- **DAS Trader Pro**: Monitors montage window titles (format: `TICKER     0 -- 0     Company Name...`). When you click a new ticker in any montage, the overlay updates.
-- **thinkorswim**: Monitors chart window titles (format: `PRSO, MOBX, TURB - Charts - ...`). When a new symbol appears in your chart tabs, the overlay picks it up.
+- **DAS Trader Pro**: Monitors montage windows (`TICKER     0 -- 0     Company Name...`) and chart windows (`TICKER--5 Minute--`). Any ticker change in any montage or chart window triggers the overlay.
+- **thinkorswim**: Monitors detached chart windows (`PRSO, MOBX, TURB - Charts - ...`). When a new ticker is entered in a chart tab, the overlay picks it up.
 
-The app polls window titles every 1.5 seconds and detects when a ticker changes.
+The app polls window titles every 1 second and detects when a ticker changes.
+
+**ToS limitations**: Only *detached* chart windows are detected — charts embedded in the main ToS window (`Main@thinkorswim`) don't expose the active ticker in their window title. Switching between existing chart tabs also won't trigger a change since all tab tickers are always listed in the title. For best results with ToS, use detached chart windows and enter new tickers rather than clicking existing tabs.
 
 ## Setup
 
@@ -87,7 +89,7 @@ This is a single-file Python app (~770 lines). Some things you might want to cha
 | What | Where | Notes |
 |---|---|---|
 | **Window size** | Line ~248 (`geometry("480x620+50+50")`) | Width x height + position |
-| **Poll interval** | `POLL_INTERVAL = 1.5` | Seconds between window checks |
+| **Poll interval** | `POLL_INTERVAL = 1.0` | Seconds between window checks |
 | **Colors** | Lines ~31-40 (color constants) | Dark theme hex values |
 | **News limit** | `fetch_news_and_grok` params | Currently fetches top 2 news + 3 analyst notes |
 | **Grok truncation** | `_add_feed_item` | Currently truncates at 240 chars |

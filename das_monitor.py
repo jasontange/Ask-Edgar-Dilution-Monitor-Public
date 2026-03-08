@@ -77,15 +77,19 @@ def fmt_millions(val) -> str:
 
 # ── Window Monitor ──────────────────────────────────────────────────────────
 def find_montage_windows() -> dict[int, str]:
-    """Return {hwnd: ticker} for all visible DAS montage windows."""
+    """Return {hwnd: ticker} for all visible DAS montage and chart windows."""
     windows = {}
 
     def enum_callback(hwnd, _):
         if not win32gui.IsWindowVisible(hwnd):
             return
         title = win32gui.GetWindowText(hwnd)
+        # DAS montage: "TICKER     0 -- 0     Company Name..."
         if re.match(r'^[A-Z]{1,5}\s+\d', title):
             windows[hwnd] = title.split()[0]
+        # DAS chart: "TICKER--5 Minute--"
+        elif re.match(r'^[A-Z]{1,5}--', title):
+            windows[hwnd] = title.split('--')[0]
 
     win32gui.EnumWindows(enum_callback, None)
     return windows
@@ -451,7 +455,7 @@ class DilutionOverlay:
 
         # ── In Play Dilution card ──
         if in_play_warrants or in_play_converts:
-            self._add_in_play_section(in_play_warrants or [], in_play_converts or [], stock_price)
+            self._add_in_play_section(in_play_warrants or [], in_play_converts or [], stock_price, dilution_url)
 
         # ── JMT415 Previous Notes card ──
         if jmt415_notes:
@@ -623,7 +627,7 @@ class DilutionOverlay:
             row.bind("<Configure>", _rewrap)
 
     def _add_in_play_section(self, warrants: list[dict], convertibles: list[dict],
-                             stock_price: float = 0.0):
+                             stock_price: float = 0.0, dilution_url: str = ""):
         card = self._make_card(self.content_frame, title="In Play Dilution")
         body = tk.Frame(card, bg=BG_CARD, padx=14, pady=8)
         body.pack(fill="x")
@@ -635,14 +639,14 @@ class DilutionOverlay:
             ).pack(fill="x", pady=(4, 4))
             for w in warrants:
                 ex_price = w.get("warrants_exercise_price", 0) or 0
-                above = ex_price >= stock_price > 0
+                in_money = stock_price > 0 and ex_price <= stock_price
                 self._add_dilution_row(
                     body, w.get("details", ""),
                     f"Remaining: {fmt_millions(w.get('warrants_remaining'))}",
                     f"Strike: ${ex_price:.2f}",
                     (w.get("filed_at") or "")[:10],
-                    w.get("askedgar_url"),
-                    above,
+                    w.get("askedgar_url") or dilution_url,
+                    in_money,
                 )
 
         if convertibles:
@@ -652,19 +656,19 @@ class DilutionOverlay:
             ).pack(fill="x", pady=(8, 4))
             for c in convertibles:
                 conv_price = c.get("conversion_price", 0) or 0
-                above = conv_price >= stock_price > 0
+                in_money = stock_price > 0 and conv_price <= stock_price
                 self._add_dilution_row(
                     body, c.get("details", ""),
                     f"Shares: {fmt_millions(c.get('underlying_shares_remaining'))}",
                     f"Conv: ${conv_price:.2f}",
                     (c.get("filed_at") or "")[:10],
-                    c.get("askedgar_url"),
-                    above,
+                    c.get("askedgar_url") or dilution_url,
+                    in_money,
                 )
 
     def _add_dilution_row(self, parent, details, remaining, price, filed,
                           url=None, price_above=False):
-        # Green if price >= stock price, orange if below
+        # Green if strike/conv price <= stock price (in the money), orange otherwise
         highlight = "#4CAF50" if price_above else "#FF9800"
 
         row = tk.Frame(parent, bg=BG_ROW,
@@ -726,10 +730,8 @@ class DilutionOverlay:
                 if changed_ticker is None:
                     new_hwnds = set(current) - set(self._known_windows)
                     for hwnd in new_hwnds:
-                        ticker = current[hwnd]
-                        if ticker != self.current_ticker:
-                            changed_ticker = ticker
-                            break
+                        changed_ticker = current[hwnd]
+                        break
                 self._known_windows = current
 
                 # ── thinkorswim chart windows ──
@@ -744,15 +746,11 @@ class DilutionOverlay:
                     if changed_ticker is None:
                         new_hwnds = set(tos_current) - set(self._known_tos)
                         for hwnd in new_hwnds:
-                            for t in tos_current[hwnd]:
-                                if t != self.current_ticker:
-                                    changed_ticker = t
-                                    break
-                            if changed_ticker:
-                                break
+                            changed_ticker = tos_current[hwnd][0]
+                            break
                     self._known_tos = tos_current
 
-                if changed_ticker and changed_ticker != self.current_ticker:
+                if changed_ticker:
                     self.current_ticker = changed_ticker
                     self.root.after(0, self._on_ticker_change, changed_ticker)
                 time.sleep(POLL_INTERVAL)
