@@ -235,14 +235,26 @@ def fetch_in_play_dilution(ticker: str) -> tuple[list[dict], list[dict], float]:
 
     warrants = []
     convertibles = []
+    from datetime import datetime, timedelta
+    six_months_ago = datetime.now() - timedelta(days=180)
 
     for item in data.get("results", []):
         registered = item.get("registered") or ""
-        if "Not Registered" in registered:
-            continue
-
         details_lower = (item.get("details") or "").lower()
         is_warrant = "warrant" in details_lower or "option" in details_lower
+
+        # Skip "Not Registered" items, but override for convertibles filed >6 months ago
+        skip_not_registered = "Not Registered" in registered
+        if skip_not_registered and not is_warrant:
+            filed_at_str = (item.get("filed_at") or "")[:10]
+            if filed_at_str:
+                try:
+                    if datetime.strptime(filed_at_str, "%Y-%m-%d") < six_months_ago:
+                        skip_not_registered = False
+                except ValueError:
+                    pass
+        if skip_not_registered:
+            continue
 
         if is_warrant and item.get("warrants_exercise_price"):
             if item["warrants_exercise_price"] <= max_price:
