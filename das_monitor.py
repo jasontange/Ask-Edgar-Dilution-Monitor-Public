@@ -597,7 +597,7 @@ class DilutionOverlay:
         for part in parts:
             part_lower = part.lower()
             if "pending s-1" in part_lower or "pending f-1" in part_lower:
-                color = "#FF4444"
+                color = "#4CAF50"
                 bold = True
             elif ("shelf capacity" in part_lower or "atm capacity" in part_lower
                   or "equity line capacity" in part_lower):
