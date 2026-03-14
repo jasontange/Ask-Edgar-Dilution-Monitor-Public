@@ -24,12 +24,14 @@ except ImportError:
 
 # ── Config ──────────────────────────────────────────────────────────────────
 # API keys – set these as environment variables or in a .env file
-# See .env.example for details
+# Copy .env.example to .env and paste your API key there
 ASKEDGAR_API_KEY = os.environ.get("ASKEDGAR_API_KEY", "")
 
 if not ASKEDGAR_API_KEY:
-    print("ERROR: Missing API key. Copy .env.example to .env and fill in your key.")
-    print("  ASKEDGAR_API_KEY - request trial at askedgar.io")
+    print("ERROR: Missing API key.")
+    print("  1. Copy .env.example to .env (remove the .example part)")
+    print("  2. Open .env in Notepad and replace 'your_api_key_here' with your key")
+    print("  Request a free trial key at: https://share-na2.hsforms.com/1mRWaNy8PRFuCZr5YJvjdQQqjkci")
 
 DILUTION_API_URL = "https://eapi.askedgar.io/enterprise/v1/dilution-rating"
 DILUTION_API_KEY = ASKEDGAR_API_KEY
