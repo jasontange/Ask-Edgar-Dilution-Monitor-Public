@@ -2,7 +2,9 @@
 
 A real-time desktop overlay that monitors your trading platform for ticker changes and instantly displays dilution risk data from [Ask Edgar](https://askedgar.io).
 
-When you switch tickers in DAS Trader Pro or thinkorswim, the overlay automatically fetches and shows:
+Built for DAS Trader Pro and thinkorswim out of the box, but **fully customizable** — an AI coding assistant can add support for TradeZero, Sterling, Neovest, or any other platform. See [Adding support for other trading platforms](#adding-support-for-other-trading-platforms).
+
+When you switch tickers, the overlay automatically fetches and shows:
 
 - **Dilution risk ratings** – Overall risk, offering ability, dilution level, frequency, cash need, warrants
 - **Float & outstanding shares** – With market cap, sector, and country
@@ -235,13 +237,29 @@ Or just double-click `run.bat` again.
 
 ### Adding support for other trading platforms
 
-Ask your AI assistant something like:
+This app currently supports DAS Trader Pro and thinkorswim, but it's fully customizable — an AI assistant can add support for **any trading platform** that shows the ticker in its window title. This includes platforms like:
 
-> "Add support for [platform name] — it needs to detect the active ticker from the window title"
+- **TradeZero**
+- **Sterling Trader**
+- **Neovest**
+- **Interactive Brokers TWS**
+- **Lightspeed**
+- **CenterPoint**
+- Or any other platform
 
-The AI will need to know how your platform formats its window titles. You can find out by asking:
+**To add your platform, give your AI assistant as much detail as possible:**
+
+1. Tell it which platform you use and how your layout is set up (floating windows, docked panels, multiple monitors, etc.)
+2. **Take screenshots** of your trading platform — especially the window title bars — and share them with your AI assistant. Screenshots let the AI see exactly how your platform formats its titles so it can write the detection logic.
+3. Ask it to list your window titles first so it can figure out the pattern:
 
 > "Print all visible window titles on my screen so I can find my trading platform"
+
+4. Then ask it to add support:
+
+> "Add support for [platform name] — it needs to detect the active ticker from the window title. Here's a screenshot of my setup: [paste screenshot]"
+
+The more context you give (platform name, window layout, screenshots), the faster the AI can get it working.
 
 ## Tech Stack
 
